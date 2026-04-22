@@ -16,3 +16,35 @@ stages:
       - configs/config.yaml
     # No outs — validation is a gate, not a transformation
     # DVC will re-run if deps change
+
+  feature_engineering:
+    cmd: python src/features/engineer.py
+    deps:
+      - data/raw/diabetes_readmission.csv
+      - src/features/engineer.py
+      - configs/config.yaml
+    outs:
+      - data/processed/train.parquet:
+          cache: true
+      - data/processed/val.parquet:
+          cache: true
+      - data/processed/test.parquet:
+          cache: true
+
+  feature_selection:
+    cmd: python src/features/selector.py
+    deps:
+      - data/processed/train.parquet
+      - src/features/selector.py
+      - configs/config.yaml
+    outs:
+      - data/processed/selected_features.json:
+          cache: true
+      - reports/feature_importance_mi.png:
+          cache: false
+      - reports/feature_importance_lasso.png:
+          cache: false
+      - reports/feature_importance_rf.png:
+          cache: false
+      - reports/feature_consensus_heatmap.png:
+          cache: false

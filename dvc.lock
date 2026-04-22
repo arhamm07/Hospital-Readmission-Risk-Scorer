@@ -11,3 +11,82 @@ stages:
       hash: md5
       md5: 57d756ca9b562d64afbad114353262bf
       size: 16348627
+  data_validate:
+    cmd: python src/data/validate.py
+    deps:
+    - path: configs/config.yaml
+      hash: md5
+      md5: f236717ce6c6188ea7e377aeaa679b67
+      size: 1776
+    - path: data/raw/diabetes_readmission.csv
+      hash: md5
+      md5: 57d756ca9b562d64afbad114353262bf
+      size: 16348627
+    - path: src/data/validate.py
+      hash: md5
+      md5: 2e1015f5e345b3a6c2de714c892b0d03
+      size: 7179
+  feature_engineering:
+    cmd: python src/features/engineer.py
+    deps:
+    - path: configs/config.yaml
+      hash: md5
+      md5: d512a9e625cc0fc410fd8cbfc8267c1e
+      size: 1791
+    - path: data/raw/diabetes_readmission.csv
+      hash: md5
+      md5: 57d756ca9b562d64afbad114353262bf
+      size: 16348627
+    - path: src/features/engineer.py
+      hash: md5
+      md5: 9cc0fce3320291ad39312cae38da1b39
+      size: 18787
+    outs:
+    - path: data/processed/test.parquet
+      hash: md5
+      md5: ef55d3e46da30cfcbd6ffee3f29616d9
+      size: 324617
+    - path: data/processed/train.parquet
+      hash: md5
+      md5: c25958ea10a4368ae6905347fdfd3fad
+      size: 1348039
+    - path: data/processed/val.parquet
+      hash: md5
+      md5: c11f712b5856dece2cba995a625165b3
+      size: 323551
+  feature_selection:
+    cmd: python src/features/selector.py
+    deps:
+    - path: configs/config.yaml
+      hash: md5
+      md5: d512a9e625cc0fc410fd8cbfc8267c1e
+      size: 1791
+    - path: data/processed/train.parquet
+      hash: md5
+      md5: c25958ea10a4368ae6905347fdfd3fad
+      size: 1348039
+    - path: src/features/selector.py
+      hash: md5
+      md5: 1f235986929928fbd40aa507b4d72f09
+      size: 12331
+    outs:
+    - path: data/processed/selected_features.json
+      hash: md5
+      md5: d620d7f9a4b188bd6649c9e50e4fb2d6
+      size: 1834
+    - path: reports/feature_consensus_heatmap.png
+      hash: md5
+      md5: fd830ad22a47c396cdc73ae9e18c11cc
+      size: 187821
+    - path: reports/feature_importance_lasso.png
+      hash: md5
+      md5: f0481ea734df921a738413efca769c97
+      size: 94106
+    - path: reports/feature_importance_mi.png
+      hash: md5
+      md5: cb7b994aa06a38d9108b1a1c302a2eff
+      size: 81315
+    - path: reports/feature_importance_rf.png
+      hash: md5
+      md5: 0d8226554179b066fa283ed897957ed7
+      size: 94507
