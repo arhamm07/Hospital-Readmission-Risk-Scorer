@@ -48,3 +48,49 @@ stages:
           cache: false
       - reports/feature_consensus_heatmap.png:
           cache: false
+
+
+  train:
+    cmd: python src/training/train.py
+    deps:
+      - data/processed/train.parquet
+      - data/processed/val.parquet
+      - data/processed/test.parquet
+      - data/processed/selected_features.json
+      - src/training/train.py
+      - src/models/xgb_model.py
+      - configs/config.yaml
+    outs:
+      - models/xgb_base.ubj:
+          cache: true
+      - models/calibrated_model.pkl:
+          cache: true
+      - models/risk_tier_thresholds.json:
+          cache: true
+
+
+  evaluate:
+    cmd: python src/training/evaluate.py
+    deps:
+      - data/processed/test.parquet
+      - data/processed/selected_features.json
+      - models/calibrated_model.pkl
+      - models/risk_tier_thresholds.json
+      - src/training/evaluate.py
+      - configs/config.yaml
+    metrics:
+      - reports/metrics.json:
+          cache: false
+    outs:
+      - reports/eval_metrics.json:
+          cache: false
+      - reports/eval_reliability_test.png:
+          cache: false
+      - reports/eval_threshold_sweep_test.png:
+          cache: false
+      - reports/eval_confusion_matrix_test.png:
+          cache: false
+      - reports/eval_risk_tiers_test.png:
+          cache: false
+      - reports/eval_decile_test.png:
+          cache: false
