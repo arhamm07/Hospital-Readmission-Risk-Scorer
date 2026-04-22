@@ -1,0 +1,13 @@
+schema: '2.0'
+stages:
+  data_download:
+    cmd: python src/data/download.py
+    outs:
+    - path: data/external/icd10_lookup.csv
+      hash: md5
+      md5: 33bb7013691b0838dce41817a6cc67b7
+      size: 363
+    - path: data/raw/diabetes_readmission.csv
+      hash: md5
+      md5: 57d756ca9b562d64afbad114353262bf
+      size: 16348627

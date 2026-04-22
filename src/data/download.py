@@ -1,5 +1,7 @@
 import sys 
 from pathlib import Path
+import time
+import os
 
 import pandas as pd
 from ucimlrepo import fetch_ucirepo
@@ -10,6 +12,9 @@ sys.path.append(str(Path(__file__).resolve().parents[2]))
 from src.utils.config import load_config
 from src.utils.logger import get_logger
 
+# Optimize pandas CSV reading in ucimlrepo to avoid dtype inference overhead
+os.environ['PANDAS_READ_CSV_LOW_MEMORY'] = 'False'
+
 logger = get_logger(__name__, log_file= 'logs/download.log')
 
 
@@ -18,9 +23,11 @@ def download_data(cfg) -> pd.DataFrame:
     Fetches the Diabetes 130-US Hospitals dataset from UCI ML Repository.
     Dataset ID: 296
     Returns a merged DataFrame (features + target).
+    Optimized with low_memory=False to avoid dtype inference overhead.
     """
     
     logger.info(f'Fetching UCI Dataset ID={cfg.data.dataset_id}...')
+    start_time = time.time()
     
     dataset = fetch_ucirepo(id=cfg.data.dataset_id)
     
@@ -31,7 +38,11 @@ def download_data(cfg) -> pd.DataFrame:
     
     df = pd.concat([features, targets], axis=1)
     
-    logger.info(f'Dataset loaded with shape: {df.shape}. Columns: {df.columns.tolist()}')
+    download_time = time.time() - start_time
+    data_size_mb = df.memory_usage(deep=True).sum() / (1024 ** 2)
+    
+    logger.info(f'Dataset loaded with shape: {df.shape}. Size: {data_size_mb:.2f} MB. Download time: {download_time:.2f}s')
+    logger.info(f'Columns: {df.columns.tolist()}')
     
     return df
 
@@ -92,7 +103,7 @@ def create_icd10_lookup(cfg) -> Path:
     lookup_path = external_dir / cfg.data.icd10_lookup_filename
     lookup_df.to_csv(lookup_path, index=False)
 
-    logger.info(f"ICD-10 lookup saved → {lookup_path}")
+    logger.info(f"ICD-10 lookup saved to {lookup_path}")
     return lookup_path
 
 
@@ -109,8 +120,8 @@ def main():
     icd_path = create_icd10_lookup(cfg)
     
     logger.info("Data download complete.")
-    logger.info(f"  Raw data  → {raw_path}")
-    logger.info(f"  ICD10 map → {icd_path}")
+    logger.info(f"  Raw data  -> {raw_path}")
+    logger.info(f"  ICD10 map -> {icd_path}")
     
 
 if __name__ == "__main__":
