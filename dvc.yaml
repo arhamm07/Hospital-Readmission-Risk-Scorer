@@ -1,0 +1,18 @@
+stages:
+
+  data_download:
+    cmd: python src/data/download.py
+    outs:
+      - data/raw/diabetes_readmission.csv:
+          cache: true
+      - data/external/icd10_lookup.csv:
+          cache: true
+
+  data_validate:
+    cmd: python src/data/validate.py
+    deps:
+      - data/raw/diabetes_readmission.csv
+      - src/data/validate.py
+      - configs/config.yaml
+    # No outs — validation is a gate, not a transformation
+    # DVC will re-run if deps change
