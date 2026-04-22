@@ -32,7 +32,7 @@ def get_logger(name: str, log_file: str | None = None, level: int = logging.INFO
     
     if log_file:
         Path(log_file).parent.mkdir(parents= True, exist_ok= True)
-        file_handler = logging.FileHandler(log_file)
+        file_handler = logging.FileHandler(log_file, encoding='utf-8')
         file_handler.setLevel(level)
         file_handler.setFormatter(formatter)
         logger.addHandler(file_handler)
