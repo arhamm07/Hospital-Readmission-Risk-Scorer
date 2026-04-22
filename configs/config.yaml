@@ -1,0 +1,40 @@
+project:
+  name: 'hospital-readmission-risk'
+  version: '1.0.0'
+  random_seed: 42
+  mlflow_experiment: 'hospital-readmission-risk'
+  mlflow_tracking_url: 'http://localhost:5000'
+
+
+
+data:
+  dataset_id: 296
+  raw_dir: 'data/raw'
+  preprocessed_dir: 'data/preprocessed'
+  external_dir: 'data/external'
+
+  raw_filename: 'diabetes_readmission.csv'
+  icd10_lookup_filename: 'icd10_lookup.csv'
+
+  target_col: "readmitted"
+  target_binary_col: "readmitted_30d"
+  positive_class: "<30"
+
+  drop_columns:
+    - 'encounter_id'
+    - 'patient_nbr'
+    - 'readmitted'
+    - 'examide'
+    - 'citoglipton'
+
+  high_missing_threshold: 35.0
+
+  id_columns: 
+    - 'encounter_id'
+    - 'patient_nbr'
+
+
+splits:
+  test_size: 0.15
+  val_size: 0.176
+  stratify: true
