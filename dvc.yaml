@@ -94,3 +94,22 @@ stages:
           cache: false
       - reports/eval_decile_test.png:
           cache: false
+
+
+  explainability:
+    cmd: python src/explainability/report_generator.py
+    deps:
+      - models/xgb_base.ubj
+      - data/processed/train.parquet
+      - data/processed/test.parquet
+      - data/processed/selected_features.json
+      - src/explainability/shap_explainer.py
+      - src/explainability/report_generator.py
+      - configs/config.yaml
+    outs:
+      - reports/shap_summary_bar.png:
+          cache: false
+      - reports/shap_beeswarm.png:
+          cache: false
+      - reports/global_explanation.html:
+          cache: false
