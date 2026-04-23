@@ -128,15 +128,33 @@ model:
       reg_alpha:          [1.0e-4, 10.0]
       reg_lambda:         [1.0e-4, 10.0]
 
-# ── Calibration ───────────────────────────────────────────────
-calibration:
-  method: "isotonic"                              # platt or isotonic
-  n_bins: 10                                      # for ECE computation
 
-# ── Risk Tiers ────────────────────────────────────────────────
+calibration:
+  method: "isotonic"                              
+  n_bins: 10                                   
+
 risk_tiers:
   thresholds:
     low: 0.25
     medium: 0.50
     high: 0.75
   clinical_flag_percentile: 80
+
+
+serving:
+  host: "0.0.0.0"
+  port: 8000
+  model_uri: "models:/hospital-readmission-risk/Production"
+  shap_top_k: 5                                  
+  request_timeout_seconds: 5
+
+monitoring:
+  prometheus_port: 8001
+  psi_warning_threshold: 0.10
+  psi_critical_threshold: 0.25
+  drift_check_interval_hours: 24
+
+cicd:
+  min_auc_roc_gate: 0.70                         
+  min_auc_pr_gate: 0.30
+  max_ece_gate: 0.05
