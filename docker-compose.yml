@@ -1,0 +1,87 @@
+version: "3.9"
+
+services:
+
+  # FastAPI Inference Server
+  api:
+    build: .
+    container_name: readmission_api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./models:/app/models:ro
+      - ./data/processed:/app/data/processed:ro
+      - ./reports:/app/reports:ro
+      - ./configs:/app/configs:ro
+      - ./logs:/app/logs
+    environment:
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
+    depends_on:
+      - mlflow
+    restart: unless-stopped
+    networks:
+      - ml_net
+
+  # MLflow Tracking Server
+  mlflow:
+    image: python:3.11-slim
+    container_name: readmission_mlflow
+    command: >
+      sh -c "pip install mlflow --quiet &&
+             mlflow server
+             --backend-store-uri sqlite:///mlflow.db
+             --default-artifact-root /mlflow/artifacts
+             --host 0.0.0.0
+             --port 5000"
+    ports:
+      - "5000:5000"
+    volumes:
+      - mlflow_data:/mlflow
+    networks:
+      - ml_net
+    restart: unless-stopped
+
+  # Prometheus
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: readmission_prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.enable-lifecycle"
+    networks:
+      - ml_net
+    restart: unless-stopped
+
+  # Grafana
+  grafana:
+    image: grafana/grafana:latest
+    container_name: readmission_grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana:/etc/grafana/provisioning/dashboards:ro
+    depends_on:
+      - prometheus
+    networks:
+      - ml_net
+    restart: unless-stopped
+
+volumes:
+  mlflow_data:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  ml_net:
+    driver: bridge
