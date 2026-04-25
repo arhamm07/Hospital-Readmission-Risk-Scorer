@@ -16,8 +16,8 @@ stages:
     deps:
     - path: configs/config.yaml
       hash: md5
-      md5: f236717ce6c6188ea7e377aeaa679b67
-      size: 1776
+      md5: b65606095d0ef6baeab85136d45b8962
+      size: 3259
     - path: data/raw/diabetes_readmission.csv
       hash: md5
       md5: 57d756ca9b562d64afbad114353262bf
@@ -163,18 +163,74 @@ stages:
       size: 11794
     - path: src/explainability/shap_explainer.py
       hash: md5
-      md5: 5befd30e55de391aef5680cc9cc1ce7c
-      size: 9563
+      md5: 6e6a04a95d61b2bf6efb2f96b5608f9c
+      size: 9923
     outs:
     - path: reports/global_explanation.html
       hash: md5
-      md5: 2b8b519c22c2396d469d92d01570869d
+      md5: fc4c2c1f1963634c6b7b2c02e1482f61
       size: 3695
     - path: reports/shap_beeswarm.png
       hash: md5
-      md5: 783464d6eec7cb50c8a6733966795216
-      size: 164827
+      md5: b0ef01827fd159797c5243bf938ba7ca
+      size: 165216
     - path: reports/shap_summary_bar.png
       hash: md5
-      md5: 3ad85f587af197a5e3014ea10708d99d
-      size: 104166
+      md5: 4c3624ac96c5323fff3af9cd5e7fe76f
+      size: 104175
+  evaluate:
+    cmd: python src/training/evaluate.py
+    deps:
+    - path: configs/config.yaml
+      hash: md5
+      md5: b65606095d0ef6baeab85136d45b8962
+      size: 3259
+    - path: data/processed/selected_features.json
+      hash: md5
+      md5: 389520f9de824f3b4429f6412ad61902
+      size: 1834
+    - path: data/processed/test.parquet
+      hash: md5
+      md5: ef55d3e46da30cfcbd6ffee3f29616d9
+      size: 324617
+    - path: models/calibrated_model.pkl
+      hash: md5
+      md5: 838831cd7cbcf1eba3e180fd6e4ef321
+      size: 571956
+    - path: models/risk_tier_thresholds.json
+      hash: md5
+      md5: 571e8214275c9baa513bf269e6a5460f
+      size: 147
+    - path: src/training/evaluate.py
+      hash: md5
+      md5: ca4a648bb918e2ee3b91df9533988c95
+      size: 28664
+    outs:
+    - path: reports/eval_confusion_matrix_test.png
+      hash: md5
+      md5: 13b8f9171e45d08028e94b8f632b3b3e
+      size: 41177
+    - path: reports/eval_decile_test.png
+      hash: md5
+      md5: ae022558bbdb6de11f1e85e3c865d126
+      size: 60388
+    - path: reports/eval_metrics.json
+      hash: md5
+      md5: a19f3b24e08dd715c25c9a33ad6acb7b
+      size: 863
+    - path: reports/eval_reliability_test.png
+      hash: md5
+      md5: 06c6b0f4b1acbbd8383aefbef99165c6
+      size: 84376
+    - path: reports/eval_risk_tiers_test.png
+      hash: md5
+      md5: 9aa2810c46eb24ff5275ce17920cfacc
+      size: 57143
+    - path: reports/eval_threshold_sweep_test.png
+      hash: md5
+      md5: 90769d37225515d869d391fc20acb3d7
+      size: 80171
+    - path: reports/metrics.json
+      hash: md5
+      md5: 118a73b6f2116bfe24b1091910693fa2
+      size: 843

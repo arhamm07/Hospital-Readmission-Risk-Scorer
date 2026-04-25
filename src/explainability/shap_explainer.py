@@ -49,7 +49,7 @@ class SHAPExplainer:
             X_background: np.ndarray) -> 'SHAPExplainer':
         """
         Creates shap.Explainer using the generic Explainer API.
-        Uses a lambda wrapper around predict_proba to avoid XGBoost 3.x compatibility issues.
+        Handles both model objects and callable functions.
         X_background is used for the expected value baseline.
         Pass X_train (or a sample of it).
         """
@@ -59,18 +59,25 @@ class SHAPExplainer:
             f"background shape: {X_background.shape}"
         )
         
-        # Use shap.Explainer with lambda to avoid XGBoost 3.x base_score parsing issues
+        # Create prediction function - handle both model objects and callable functions
+        if callable(self.model) and not hasattr(self.model, 'predict_proba'):
+            # Model is already a callable function (e.g., lambda wrapper)
+            predict_fn = self.model
+            expected_value = float(self.model(X_background).mean())
+        else:
+            # Model is a model object with predict_proba method
+            predict_fn = lambda x: self.model.predict_proba(x)[:, 1]
+            expected_value = float(self.model.predict_proba(X_background)[:, 1].mean())
+        
+        # Use shap.Explainer with the prediction function
         self.explainer = shap.Explainer(
-            lambda x: self.model.predict_proba(x)[:, 1],
+            predict_fn,
             X_background,
             feature_names=self.feature_names,
         )
         
         # Compute expected value as the average prediction on background data
-        # (PermutationExplainer doesn't have expected_value attribute)
-        self.expected_value = float(
-            self.model.predict_proba(X_background)[:, 1].mean()
-        )
+        self.expected_value = expected_value
         
         logger.info(
             f"SHAP Explainer created — "
