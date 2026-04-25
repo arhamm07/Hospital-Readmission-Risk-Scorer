@@ -9,7 +9,9 @@ import numpy as np
 import pandas as pd
 import xgboost as xgb
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, HTMLResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 from starlette.responses import Response
 
@@ -216,6 +218,18 @@ app = FastAPI(
 
 app.add_middleware(RequestLoggingMiddleware)
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+from pathlib import Path
+static_dir = Path(__file__).resolve().parents[2] / "static"
+if static_dir.exists():
+    app.mount("/static", StaticFiles(directory=str(static_dir)), "static")
+
 
 
 @app.get('/health', response_model= HealthResponse, tags= ['Ops'])
@@ -254,6 +268,24 @@ def predict_risk(patient: PatientFeatures,
     except Exception as e:
         logger.error(f"Prediction error for {patient_id}: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post('/predict-risk-debug', tags=['Debug'])
+def predict_risk_debug(patient: dict, patient_id: str = 'unknown'):
+    """Debug endpoint that skips validation."""
+    if not state.is_ready:
+        raise HTTPException(status_code=503, detail="Model not loaded yet")
+
+    try:
+        x = np.array([[float(patient.get(f, 0.0)) for f in state.feature_names]], dtype=np.float32)
+
+        risk_score = float(state.calibrated_model.predict_proba(x)[0, 1])
+        risk_tier = assign_risk_tier(risk_score, state.risk_thresholds)
+
+        return {"patient_id": patient_id, "risk_score": risk_score, "risk_tier": risk_tier}
+    except Exception as e:
+        logger.error(f"Debug prediction error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
     
     
 @app.post("/predict-risk/batch",response_model=BatchPredictResponse,tags=["Inference"],)
@@ -282,7 +314,15 @@ def predict_risk_batch(payload: BatchPredictRequest):
         predictions = predictions,
         n_patients  = len(predictions),
     )
-    
+
+@app.get("/", tags=["UI"], response_class=HTMLResponse)
+def root():
+    """Serve web UI."""
+    from pathlib import Path
+    template_path = Path(__file__).resolve().parents[2] / "templates" / "index.html"
+    return HTMLResponse(content=template_path.read_text())
+
+
 @app.get("/metrics", tags=["Ops"], include_in_schema=False)
 def prometheus_metrics():
     """Prometheus scrape endpoint."""

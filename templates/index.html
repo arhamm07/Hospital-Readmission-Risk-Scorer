@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital Readmission Risk Scorer</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Hospital Readmission Risk Scorer</h1>
+            <p>Predict 30-day readmission risk for diabetic patients</p>
+        </header>
+
+        <div class="api-status">
+            <span id="status-indicator" class="status-dot"></span>
+            <span id="status-text">Checking API...</span>
+        </div>
+
+        <main>
+            <form id="prediction-form">
+                <h2>Patient Information</h2>
+                
+                <div class="form-section">
+                    <h3>Demographics</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="age_numeric">Age Bucket Index (0-9)</label>
+                            <input type="number" id="age_numeric" name="age_numeric" min="0" max="9" value="6" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="gender">Gender</label>
+                            <select id="gender" name="gender" required>
+                                <option value="0">Male</option>
+                                <option value="1">Female</option>
+                                <option value="-1">Unknown</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="age_risk_bucket">Age Risk Bucket</label>
+                            <select id="age_risk_bucket" name="age_risk_bucket" required>
+                                <option value="Young">Young</option>
+                                <option value="Middle">Middle</option>
+                                <option value="Elderly" selected>Elderly</option>
+                                <option value="Unknown">Unknown</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>Hospital Visit History</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="total_prior_visits">Total Prior Visits</label>
+                            <input type="number" id="total_prior_visits" name="total_prior_visits" min="0" value="2" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="high_utilizer">High Utilizer</label>
+                            <select id="high_utilizer" name="high_utilizer">
+                                <option value="0" selected>No</option>
+                                <option value="1">Yes</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="time_in_hospital">Time in Hospital (days)</label>
+                            <input type="number" id="time_in_hospital" name="time_in_hospital" min="1" max="30" value="5" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>Clinical Information</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="number_diagnoses">Number of Diagnoses</label>
+                            <input type="number" id="number_diagnoses" name="number_diagnoses" min="0" max="20" value="7" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="num_medications">Number of Medications</label>
+                            <input type="number" id="num_medications" name="num_medications" min="0" max="100" value="15" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="num_lab_procedures">Number of Lab Procedures</label>
+                            <input type="number" id="num_lab_procedures" name="num_lab_procedures" min="0" max="200" value="40" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="num_procedures">Number of Procedures</label>
+                            <input type="number" id="num_procedures" name="num_procedures" min="0" max="10" value="2" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="n_active_medications">Active Medications</label>
+                            <input type="number" id="n_active_medications" name="n_active_medications" min="0" value="3">
+                        </div>
+                        <div class="form-group">
+                            <label for="any_insulin">On Insulin</label>
+                            <select id="any_insulin" name="any_insulin">
+                                <option value="0" selected>No</option>
+                                <option value="1">Yes</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>Lab Results</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="a1c_tested">A1C Tested</label>
+                            <select id="a1c_tested" name="a1c_tested">
+                                <option value="0">No</option>
+                                <option value="1" selected>Yes</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="a1c_high">A1C High</label>
+                            <select id="a1c_high" name="a1c_high">
+                                <option value="0" selected>No</option>
+                                <option value="1">Yes</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="glucose_tested">Glucose Tested</label>
+                            <select id="glucose_tested" name="glucose_tested">
+                                <option value="0">No</option>
+                                <option value="1" selected>Yes</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>Diagnosis Category</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="diag_1_category">Primary Diagnosis</label>
+                            <select id="diag_1_category" name="diag_1_category">
+                                <option value="Other" selected>Other</option>
+                                <option value="Circulatory">Circulatory</option>
+                                <option value="Respiratory">Respiratory</option>
+                                <option value="Digestive">Digestive</option>
+                                <option value="Diabetes">Diabetes</option>
+                                <option value="Infectious">Infectious</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="patient_id">Patient ID</label>
+                            <input type="text" id="patient_id" name="patient_id" placeholder="P001" value="P001">
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn">Predict Risk</button>
+            </form>
+
+            <div id="results" class="results hidden">
+                <h2>Prediction Results</h2>
+                <div class="result-card">
+                    <div class="risk-score">
+                        <span class="label">Risk Score</span>
+                        <span id="result-risk-score" class="value">--</span>
+                    </div>
+                    <div class="risk-tier">
+                        <span class="label">Risk Tier</span>
+                        <span id="result-risk-tier" class="tier-badge">--</span>
+                    </div>
+                </div>
+
+                <div class="factors-section">
+                    <h3>Top Contributing Factors</h3>
+                    <div id="factors-list" class="factors-list"></div>
+                </div>
+
+                <div class="model-info">
+                    <p>Model Version: <span id="result-model-version">--</span></p>
+                    <p>Base Rate: <span id="result-base-rate">--</span></p>
+                </div>
+            </div>
+
+            <div id="error" class="error hidden">
+                <h3>Error</h3>
+                <p id="error-message"></p>
+            </div>
+        </main>
+
+        <footer>
+            <p>Hospital Readmission Risk Scorer | XGBoost + SHAP</p>
+        </footer>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
