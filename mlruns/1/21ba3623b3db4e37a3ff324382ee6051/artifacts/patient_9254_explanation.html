@@ -1,0 +1,58 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Patient Explanation — patient_9254</title>
+  <style>
+    body  { font-family: Arial, sans-serif; margin: 40px; color: #333; }
+    h1    { color: #1565C0; }
+    h2    { color: #1976D2; border-bottom: 2px solid #1976D2; }
+    .risk-badge {
+      display: inline-block; padding: 8px 20px;
+      border-radius: 20px; font-size: 20px; font-weight: bold;
+      color: white; background: #b71c1c;
+    }
+    table { border-collapse: collapse; width: 100%; margin-top: 12px; }
+    th    { background: #1565C0; color: white; padding: 10px; text-align: left; }
+    td    { padding: 8px 10px; border: 1px solid #ddd; }
+    tr:nth-child(even) { background: #f5f5f5; }
+    .bar-pos {
+      display: inline-block; height: 16px; background: #c62828; border-radius: 2px;
+    }
+    .bar-neg {
+      display: inline-block; height: 16px; background: #2e7d32; border-radius: 2px;
+    }
+    .increases { color: #c62828; font-weight: bold; }
+    .decreases { color: #2e7d32; font-weight: bold; }
+    img { max-width: 100%; margin: 12px 0; }
+  </style>
+</head>
+<body>
+  <h1>🏥 Patient Readmission Risk Explanation</h1>
+  <p><b>Patient ID:</b> patient_9254 &nbsp;|&nbsp;
+     <b>Generated:</b> 2026-04-24 16:41</p>
+
+  <h2>Risk Score</h2>
+  <p>
+    <span class="risk-badge">Critical Risk — 91.7%</span>
+    &nbsp; Base rate: 45.9%
+  </p>
+  <p><i>Score interpretation: probability of readmission within 30 days.</i></p>
+
+  <h2>🔍 Top Factors Driving This Prediction</h2>
+  <table>
+    <tr>
+      <th>#</th>
+      <th>Feature</th>
+      <th>Patient Value</th>
+      <th>Impact</th>
+      <th>Direction</th>
+      <th>Visual</th>
+    </tr>
+    <tr><td>1</td><td>number_inpatient</td><td>12.0</td><td>+0.2361</td><td class='increases'>↑ Increases risk</td><td><span class='bar-pos' style='width:150px'></span></td></tr><tr><td>2</td><td>total_prior_visits</td><td>19.0</td><td>+0.0647</td><td class='increases'>↑ Increases risk</td><td><span class='bar-pos' style='width:41px'></span></td></tr><tr><td>3</td><td>has_number_inpatient</td><td>1.0</td><td>+0.0548</td><td class='increases'>↑ Increases risk</td><td><span class='bar-pos' style='width:34px'></span></td></tr><tr><td>4</td><td>inpatient_x_emergency</td><td>84.0</td><td>+0.0224</td><td class='increases'>↑ Increases risk</td><td><span class='bar-pos' style='width:14px'></span></td></tr><tr><td>5</td><td>age_numeric</td><td>2.0</td><td>+0.0129</td><td class='increases'>↑ Increases risk</td><td><span class='bar-pos' style='width:8px'></span></td></tr>
+  </table>
+
+  <h2>📊 SHAP Waterfall</h2>
+  <img src="../reports\shap_waterfall_patient_9254.png" />
+</body>
+</html>
