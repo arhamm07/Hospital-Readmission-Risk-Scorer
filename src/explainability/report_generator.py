@@ -286,7 +286,6 @@ def main():
 
     # Load artefacts
     proc   = Path(cfg.data.processed_dir)
-    TARGET = cfg.data.target_binary_col
 
     train_df = pd.read_parquet(proc / "train.parquet")
     test_df  = pd.read_parquet(proc / "test.parquet")

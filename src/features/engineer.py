@@ -314,15 +314,24 @@ class FeatureEngineer:
                 return "Circulatory"
             elif 460 <= num <= 519:
                 return "Respiratory"
-            elif 520 <= num <= 579: return "Digestive"
-            elif 580 <= num <= 629: return "Genitourinary"
-            elif 630 <= num <= 679: return "Pregnancy"
-            elif 680 <= num <= 709: return "Skin"
-            elif 710 <= num <= 739: return "Musculoskeletal"
-            elif 740 <= num <= 759: return "Congenital"
-            elif 780 <= num <= 799: return "Symptoms"
-            elif 800 <= num <= 999: return "Injury"
-            else: return "Other"
+            elif 520 <= num <= 579:
+                return "Digestive"
+            elif 580 <= num <= 629:
+                return "Genitourinary"
+            elif 630 <= num <= 679:
+                return "Pregnancy"
+            elif 680 <= num <= 709:
+                return "Skin"
+            elif 710 <= num <= 739:
+                return "Musculoskeletal"
+            elif 740 <= num <= 759:
+                return "Congenital"
+            elif 780 <= num <= 799:
+                return "Symptoms"
+            elif 800 <= num <= 999:
+                return "Injury"
+            else:
+                return "Other"
         except Exception:
             return "Other"
 
