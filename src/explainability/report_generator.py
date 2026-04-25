@@ -1,5 +1,6 @@
 import sys
 import json
+import pickle
 from pathlib import Path
 
 import numpy as np
@@ -286,6 +287,7 @@ def main():
 
     # Load artefacts
     proc   = Path(cfg.data.processed_dir)
+    TARGET = cfg.data.target_binary_col
 
     train_df = pd.read_parquet(proc / "train.parquet")
     test_df  = pd.read_parquet(proc / "test.parquet")
@@ -295,6 +297,7 @@ def main():
 
     X_train = train_df[selected].values
     X_test  = test_df[selected].values
+    y_test  = test_df[TARGET].values
 
     # Load base XGBoost model (not calibrated — for SHAP TreeExplainer)
     import xgboost as xgb
