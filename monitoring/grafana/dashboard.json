@@ -1,0 +1,94 @@
+{
+  "__inputs": [],
+  "__requires": [],
+  "annotations": { "list": [] },
+  "title": "Readmission Risk — ML Dashboard",
+  "uid": "readmission-ml",
+  "version": 1,
+  "panels": [
+    {
+      "id": 1,
+      "title": "Predictions Per Minute",
+      "type": "graph",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "targets": [{
+        "expr": "rate(ml_predictions_total[1m])",
+        "legendFormat": "{{risk_tier}}"
+      }]
+    },
+    {
+      "id": 2,
+      "title": "Inference Latency P95 (ms)",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 0 },
+      "targets": [{
+        "expr": "histogram_quantile(0.95, rate(ml_prediction_latency_seconds_bucket[5m])) * 1000",
+        "legendFormat": "P95 Latency"
+      }]
+    },
+    {
+      "id": 3,
+      "title": "Inference Latency P99 (ms)",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 0 },
+      "targets": [{
+        "expr": "histogram_quantile(0.99, rate(ml_prediction_latency_seconds_bucket[5m])) * 1000",
+        "legendFormat": "P99 Latency"
+      }]
+    },
+    {
+      "id": 4,
+      "title": "Risk Score Distribution",
+      "type": "graph",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 4 },
+      "targets": [{
+        "expr": "rate(ml_model_confidence_bucket[5m])",
+        "legendFormat": "Score bucket {{le}}"
+      }]
+    },
+    {
+      "id": 5,
+      "title": "Risk Tier Distribution",
+      "type": "piechart",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "targets": [{
+        "expr": "ml_risk_tier_total",
+        "legendFormat": "{{tier}}"
+      }]
+    },
+    {
+      "id": 6,
+      "title": "Feature Drift (PSI)",
+      "type": "graph",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "targets": [{
+        "expr": "ml_feature_drift_score",
+        "legendFormat": "{{feature_name}}"
+      }],
+      "thresholds": [
+        { "value": 0.1,  "colorMode": "warning" },
+        { "value": 0.25, "colorMode": "critical" }
+      ]
+    },
+    {
+      "id": 7,
+      "title": "Prediction Errors",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 16 },
+      "targets": [{
+        "expr": "rate(ml_prediction_errors_total[5m])",
+        "legendFormat": "Errors/sec"
+      }]
+    },
+    {
+      "id": 8,
+      "title": "Model Loaded",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 16 },
+      "targets": [{
+        "expr": "ml_model_loaded",
+        "legendFormat": "Model Ready"
+      }]
+    }
+  ]
+}
