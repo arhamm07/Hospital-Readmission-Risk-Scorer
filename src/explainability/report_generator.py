@@ -1,6 +1,5 @@
 import sys
 import json
-import pickle
 from pathlib import Path
 
 import numpy as np
@@ -297,7 +296,6 @@ def main():
 
     X_train = train_df[selected].values
     X_test  = test_df[selected].values
-    y_test  = test_df[TARGET].values
 
     # Load base XGBoost model (not calibrated — for SHAP TreeExplainer)
     import xgboost as xgb

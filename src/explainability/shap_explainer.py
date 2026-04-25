@@ -12,7 +12,6 @@ import shap
 
 sys.path.append(str(Path(__file__).resolve().parents[2]))
 
-from src.utils.config import load_config
 from src.utils.logger import get_logger
 
 
@@ -66,7 +65,8 @@ class SHAPExplainer:
             expected_value = float(self.model(X_background).mean())
         else:
             # Model is a model object with predict_proba method
-            predict_fn = lambda x: self.model.predict_proba(x)[:, 1]
+            def predict_fn(x):
+                return self.model.predict_proba(x)[:, 1]
             expected_value = float(self.model.predict_proba(X_background)[:, 1].mean())
         
         # Use shap.Explainer with the prediction function

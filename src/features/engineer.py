@@ -36,7 +36,7 @@ class DataCleaner:
         
         # 1. Replace '?' sentinel with NaN
         df = df.replace('?', np.nan)
-        logger.info(f'replaced "?" with NaN')
+        logger.info('replaced "?" with NaN')
         
         # 2. Binary target
         df[self.cfg.data.target_binary_col] = (
@@ -194,9 +194,12 @@ class FeatureEngineer:
                 if pd.isna(bracket):
                     return "Unknown"
                 idx = self.age_map.get(bracket, 0)
-                if idx <= 2:   return "Young"
-                elif idx <= 5: return "Middle"
-                else:          return "Elderly"
+                if idx <= 2:
+                    return "Young"
+                elif idx <= 5:
+                    return "Middle"
+                else:
+                    return "Elderly"
 
             df["age_risk_bucket"] = df["age"].apply(age_to_bucket)
             df = df.drop(columns=["age"])   # replaced by numeric + bucket
@@ -295,14 +298,22 @@ class FeatureEngineer:
             if code_str.startswith("V") or code_str.startswith("E"):
                 return "External"
             num = float(code_str.split(".")[0])
-            if   1   <= num <= 139: return "Infectious"
-            elif 140 <= num <= 239: return "Neoplasms"
-            elif 240 <= num <= 279: return "Endocrine"
-            elif 280 <= num <= 289: return "Blood"
-            elif 290 <= num <= 319: return "Mental"
-            elif 320 <= num <= 389: return "Nervous"
-            elif 390 <= num <= 459: return "Circulatory"
-            elif 460 <= num <= 519: return "Respiratory"
+            if 1 <= num <= 139:
+                return "Infectious"
+            elif 140 <= num <= 239:
+                return "Neoplasms"
+            elif 240 <= num <= 279:
+                return "Endocrine"
+            elif 280 <= num <= 289:
+                return "Blood"
+            elif 290 <= num <= 319:
+                return "Mental"
+            elif 320 <= num <= 389:
+                return "Nervous"
+            elif 390 <= num <= 459:
+                return "Circulatory"
+            elif 460 <= num <= 519:
+                return "Respiratory"
             elif 520 <= num <= 579: return "Digestive"
             elif 580 <= num <= 629: return "Genitourinary"
             elif 630 <= num <= 679: return "Pregnancy"
